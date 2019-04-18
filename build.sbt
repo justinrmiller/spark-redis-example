@@ -29,15 +29,16 @@ libraryDependencies ++= Seq(
   "org.apache.spark"  % "spark-streaming_2.11"            % sparkVersion,
   "org.apache.spark"  % "spark-sql_2.11"                  % sparkVersion,
 
-  "com.redislabs"     % "spark-redis"                     % "2.3.0"
+  "com.redislabs" % "spark-redis" % "2.3.1" exclude("com.redislabs", "jedis"),
+  "com.redislabs" % "jedis" % "3.0.0-20181113.105826-9" from "https://oss.sonatype.org/content/repositories/snapshots/com/redislabs/jedis/3.0.0-SNAPSHOT/jedis-3.0.0-20181113.105826-9.jar"
 )
 
 mainClass in assembly := Some("com.justinrmiller.sparkstreaming.Main")
 
-assemblyMergeStrategy in assembly <<= (mergeStrategy in assembly) { _ =>
+assemblyMergeStrategy in assembly <<= (mergeStrategy in assembly) { old =>
   {
     case "META-INF/services/org.apache.spark.sql.sources.DataSourceRegister" => MergeStrategy.concat
     case x@PathList("META-INF", xs@_*) => old(x)
-    case _ => MergeStrategy.first
+    case _ => MergeStrategy.last
   }
 }
